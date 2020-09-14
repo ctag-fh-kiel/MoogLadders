@@ -63,14 +63,19 @@ public:
 	virtual void SetResonance(float r) override
 	{
 		resonance = r;
-		gRes = resonance * (1.0029 + 0.0526 * wc - 0.926 * pow(wc, 2) + 0.0218 * pow(wc, 3));
+		float wc2 = wc*wc;
+		float wc3 = wc2*wc;
+		gRes = resonance * (1.0029 + 0.0526 * wc - 0.926 * wc2 + 0.0218 * wc3);
 	}
 	
 	virtual void SetCutoff(float c) override
 	{
 		cutoff = c;
 		wc = 2 * MOOG_PI * cutoff / sampleRate;
-		g = 0.9892 * wc - 0.4342 * pow(wc, 2) + 0.1381 * pow(wc, 3) - 0.0202 * pow(wc, 4);
+        float wc2 = wc*wc;
+        float wc3 = wc2*wc;
+        float wc4 = wc3*wc;
+		g = 0.9892 * wc - 0.4342 * wc2 + 0.1381 * wc3 - 0.0202 * wc4;
 	}
 	
 private:
