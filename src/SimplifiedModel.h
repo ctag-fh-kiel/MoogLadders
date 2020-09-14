@@ -12,6 +12,8 @@
 #define SIMPLIFIED_LADDER_H
 
 #include "LadderFilterBase.h"
+#include <cstring>
+#include "helpers/ctagFastMath.hpp"
 
 /*
 The simplified nonlinear Moog filter is based on the full Huovilainen model,
@@ -69,13 +71,13 @@ public:
 				if (stageIdx)
 				{
 					input = stage[stageIdx-1];
-					stageTanh[stageIdx-1] = tanh(input);
-					stage[stageIdx] = (h * stageZ1[stageIdx] + h0 * stageTanh[stageIdx-1]) + (1.0 - g) * (stageIdx != 3 ? stageTanh[stageIdx] : tanh(stageZ1[stageIdx]));
+					stageTanh[stageIdx-1] = CTAG::SP::HELPERS::fasttanh(input);
+					stage[stageIdx] = (h * stageZ1[stageIdx] + h0 * stageTanh[stageIdx-1]) + (1.0 - g) * (stageIdx != 3 ? stageTanh[stageIdx] : CTAG::SP::HELPERS::fasttanh(stageZ1[stageIdx]));
 				}
 				else
 				{
 					input = samples[s] - ((4.0 * resonance) * (output - gainCompensation * samples[s]));
-					stage[stageIdx] = (h * tanh(input) + h0 * stageZ1[stageIdx]) + (1.0 - g) * stageTanh[stageIdx];
+					stage[stageIdx] = (h * CTAG::SP::HELPERS::fasttanh(input) + h0 * stageZ1[stageIdx]) + (1.0 - g) * stageTanh[stageIdx];
 				}
 				
 				stageZ1[stageIdx] = stage[stageIdx];
@@ -100,7 +102,7 @@ public:
 		float fs2 = sampleRate;
 		
 		// Normalized cutoff [0, 1] in radians: ((2*pi) * cutoff / samplerate)
-		g = (2 * MOOG_PI) * cutoff / fs2; // feedback coefficient at fs*2 because of doublesampling
+		g = (2 * MOOG_PI) * cutoff / fs2; // feedback coefficient at fs*2 because of floatsampling
 		g *= MOOG_PI / 1.3; // correction factor that allows _cutoff to be supplied Hertz
 		
 		// FIR part with gain g
@@ -110,17 +112,17 @@ public:
 	
 private:
 	
-	double output;
-	double lastStage;
+	float output;
+	float lastStage;
 	
-	double stage[4];
-	double stageZ1[4];
-	double stageTanh[3];
+	float stage[4];
+	float stageZ1[4];
+	float stageTanh[3];
 	
-	double input;
-	double h;
-	double h0;
-	double g;
+	float input;
+	float h;
+	float h0;
+	float g;
 	
 	float gainCompensation;
 };

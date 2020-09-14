@@ -11,6 +11,7 @@
 #define STILSON_LADDER_H
 
 #include "LadderFilterBase.h"
+#include <cstring>
 
 /*
 A digital model of the classic Moog filter was presented first by Stilson and
@@ -100,8 +101,8 @@ public:
 		r = moog_min(r, 1);
 		resonance = r;
 		
-		double ix;
-		double ixfrac;
+		float ix;
+		float ixfrac;
 		int ixint;
 		
 		ix = p * 99;
@@ -116,9 +117,9 @@ public:
 		cutoff = c;
 		
 		// Normalized cutoff between [0, 1]
-		double fc = (cutoff) / sampleRate;
-		double x2 = fc * fc;
-		double x3 = fc * fc * fc;
+		float fc = (cutoff) / sampleRate;
+		float x2 = fc * fc;
+		float x3 = fc * fc * fc;
 		
 		// Frequency & amplitude correction (Cubic Fit)
 		p = -0.69346 * x3 - 0.59515 * x2 + 3.2937 * fc - 1.0072;
@@ -128,10 +129,10 @@ public:
 	
 private:
 	
-	double p;
-	double Q; 
-	double state[4];
-	double output; 
+	float p;
+	float Q;
+	float state[4];
+	float output;
 }; 
 
 #endif

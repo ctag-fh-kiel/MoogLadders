@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <array>
 
-#include "Util.h"
+#include "util.h"
 
 class BiQuadBase
 {
@@ -257,7 +257,7 @@ private:
 // +/-0.05dB above 9.2Hz @ 44,100Hz
 class PinkingFilter
 {
-	double b0, b1, b2, b3, b4, b5, b6;
+	float b0, b1, b2, b3, b4, b5, b6;
 public:
 	PinkingFilter() : b0(0), b1(0), b2(0), b3(0), b4(0), b5(0), b6(0) {}
 	float process(const float s)
@@ -268,7 +268,7 @@ public:
 		b3 = 0.86650 * b3 + s * 0.3104856;
 		b4 = 0.55000 * b4 + s * 0.5329522;
 		b5 = -0.7616 * b5 - s * 0.0168980;
-		const double pink = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + (s * 0.5362)) * 0.11;
+		const float pink = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + (s * 0.5362)) * 0.11;
 		b6 = s * 0.115926;
 		return pink;
 	}

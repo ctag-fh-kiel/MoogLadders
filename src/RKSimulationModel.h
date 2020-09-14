@@ -29,7 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RK_SIMULATION_LADDER_H
 
 #include "LadderFilterBase.h"
-#include "Util.h"
+#include "util.h"
+#include <cstring>
 
 /*
 Imitates a Moog resonant filter by Runge-Kutte numerical integration of
@@ -112,11 +113,11 @@ public:
 	
 private:
 	
-	void calculateDerivatives(float input, double * dstate, double * state)
+	void calculateDerivatives(float input, float * dstate, float * state)
 	{
-		double satstate0 = clip(state[0], saturation, saturationInv);
-		double satstate1 = clip(state[1], saturation, saturationInv);
-		double satstate2 = clip(state[2], saturation, saturationInv);
+		float satstate0 = clip(state[0], saturation, saturationInv);
+		float satstate1 = clip(state[1], saturation, saturationInv);
+		float satstate2 = clip(state[2], saturation, saturationInv);
 		
 		dstate[0] = cutoff * (clip(input - resonance * state[3], saturation, saturationInv) - satstate0);
 		dstate[1] = cutoff * (satstate0 - satstate1);
@@ -124,10 +125,10 @@ private:
 		dstate[3] = cutoff * (satstate2 - clip(state[3], saturation, saturationInv));
 	}
 
-	void rungekutteSolver(float input, double * state)
+	void rungekutteSolver(float input, float * state)
 	{
 		int i;
-		double deriv1[4], deriv2[4], deriv3[4], deriv4[4], tempState[4];
+		float deriv1[4], deriv2[4], deriv3[4], deriv4[4], tempState[4];
 		
 		calculateDerivatives(input, deriv1, state);
 		
@@ -150,10 +151,10 @@ private:
 			state[i] += (1.0 / 6.0) * stepSize * (deriv1[i] + 2.0 * deriv2[i] + 2.0 * deriv3[i] + deriv4[i]);
 	}
 	
-	double state[4];
-	double saturation, saturationInv;
+	float state[4];
+	float saturation, saturationInv;
 	int oversampleFactor;
-	double stepSize;
+	float stepSize;
 
 };
 

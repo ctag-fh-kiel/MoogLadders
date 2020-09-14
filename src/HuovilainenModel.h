@@ -7,6 +7,8 @@
 #define HUOVILAINEN_LADDER_H
 
 #include "LadderFilterBase.h"
+#include <cstring>
+#include "helpers/ctagFastMath.hpp"
 
 /*
 Huovilainen developed an improved and physically correct model of the Moog
@@ -56,11 +58,11 @@ public:
 			for (int j = 0; j < 2; j++) 
 			{
 				float input = samples[s] - resQuad * delay[5];
-				delay[0] = stage[0] = delay[0] + tune * (tanh(input * thermal) - stageTanh[0]);
+				delay[0] = stage[0] = delay[0] + tune * (CTAG::SP::HELPERS::fasttanh(input * thermal) - stageTanh[0]);
 				for (int k = 1; k < 4; k++) 
 				{
 					input = stage[k-1];
-					stage[k] = delay[k] + tune * ((stageTanh[k-1] = tanh(input * thermal)) - (k != 3 ? stageTanh[k] : tanh(delay[k] * thermal)));
+					stage[k] = delay[k] + tune * ((stageTanh[k-1] = CTAG::SP::HELPERS::fasttanh(input * thermal)) - (k != 3 ? stageTanh[k] : CTAG::SP::HELPERS::fasttanh(delay[k] * thermal)));
 					delay[k] = stage[k];
 				}
 				// 0.5 sample delay for phase compensation
@@ -82,29 +84,29 @@ public:
 	{
 		cutoff = c;
 
-		double fc =  cutoff / sampleRate;
-		double f  =  fc * 0.5; // oversampled 
-		double fc2 = fc * fc;
-		double fc3 = fc * fc * fc;
+		float fc =  cutoff / sampleRate;
+		float f  =  fc * 0.5; // oversampled
+		float fc2 = fc * fc;
+		float fc3 = fc * fc * fc;
 
-		double fcr = 1.8730 * fc3 + 0.4955 * fc2 - 0.6490 * fc + 0.9988;
+		float fcr = 1.8730 * fc3 + 0.4955 * fc2 - 0.6490 * fc + 0.9988;
 		acr = -3.9364 * fc2 + 1.8409 * fc + 0.9968;
 
-		tune = (1.0 - exp(-((2 * MOOG_PI) * f * fcr))) / thermal; 
+		tune = (1.0 - CTAG::SP::HELPERS::fastexp(-((2 * MOOG_PI) * f * fcr))) / thermal;
 
 		SetResonance(resonance);
 	}
 	
 private:
 	
-	double stage[4];
-	double stageTanh[3];
-	double delay[6];
+	float stage[4];
+	float stageTanh[3];
+	float delay[6];
 
-	double thermal;
-	double tune;
-	double acr;
-	double resQuad;
+	float thermal;
+	float tune;
+	float acr;
+	float resQuad;
 	
 }; 
 

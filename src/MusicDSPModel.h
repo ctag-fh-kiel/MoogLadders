@@ -9,7 +9,9 @@
 #define MUSICDSP_MOOG_H
 
 #include "LadderFilterBase.h"
-#include "Util.h"
+#include "util.h"
+#include "cstring"
+#include "helpers/ctagFastMath.hpp"
 
 class MusicDSPMoog : public LadderFilterBase
 {
@@ -63,7 +65,7 @@ public:
 		cutoff = 2.0 * c / sampleRate;
 
 		p = cutoff * (1.8 - 0.8 * cutoff);
-		k = 2.0 * sin(cutoff * MOOG_PI * 0.5) - 1.0;
+		k = 2.0 * CTAG::SP::HELPERS::fastsin(cutoff * MOOG_PI * 0.5) - 1.0;
 		t1 = (1.0 - p) * 1.386249;
 		t2 = 12.0 + t1 * t1;
 
@@ -72,13 +74,13 @@ public:
 	
 private:
 	
-	double stage[4];
-	double delay[4];
+	float stage[4];
+	float delay[4];
 
-	double p;
-	double k;
-	double t1;
-	double t2;
+	float p;
+	float k;
+	float t1;
+	float t2;
 
 };
 

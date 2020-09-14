@@ -4,7 +4,9 @@
 #define KRAJESKI_LADDER_H
 
 #include "LadderFilterBase.h"
-#include "Util.h"
+#include "util.h"
+#include <cstring>
+#include "helpers/ctagFastMath.hpp"
 
 /*
 This class implements Tim Stilson's MoogVCF filter
@@ -14,7 +16,7 @@ Several improments are built in, such as corrections
 for cutoff and resonance parameters, removal of the
 necessity of the separation table, audio rate update
 of cutoff and resonance and a smoothly saturating
-tanh() function, clamping output and creating inherent
+CTAG::SP::HELPERS::fasttanh() function, clamping output and creating inherent
 nonlinearities.
 
 This code is Unlicensed (i.e. public domain); in an email exchange on
@@ -47,7 +49,7 @@ public:
 	{
 		for (int s = 0; s < n; ++s)
 		{
-			state[0] = tanh(drive * (samples[s] - 4 * gRes * (state[4] - gComp * samples[s])));
+			state[0] = CTAG::SP::HELPERS::fasttanh(drive * (samples[s] - 4 * gRes * (state[4] - gComp * samples[s])));
 			
 			for(int i = 0; i < 4; i++)
 			{
@@ -73,13 +75,13 @@ public:
 	
 private:
 	
-	double state[5];
-	double delay[5];
-	double wc; // The angular frequency of the cutoff.
-	double g; // A derived parameter for the cutoff frequency
-	double gRes; // A similar derived parameter for resonance.
-	double gComp; // Compensation factor.
-	double drive; // A parameter that controls intensity of nonlinearities.
+	float state[5];
+	float delay[5];
+	float wc; // The angular frequency of the cutoff.
+	float g; // A derived parameter for the cutoff frequency
+	float gRes; // A similar derived parameter for resonance.
+	float gComp; // Compensation factor.
+	float drive; // A parameter that controls intensity of nonlinearities.
 	
 };
 

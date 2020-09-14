@@ -35,7 +35,7 @@ inline float moog_lerp(float amount, float a, float b)
 inline float moog_min(float a, float b)
 {
 	a = b - a;
-	a += fabs(a);
+	a += fabsf(a);
 	a *= 0.5f;
 	a = b - a;
 	return a;
@@ -47,8 +47,8 @@ inline float moog_min(float a, float b)
 // The easiest way to understand it is check what happends on both cases.
 inline float moog_saturate(float input)
 {
-	float x1 = fabs(input + 0.95f);
-	float x2 = fabs(input - 0.95f);
+	float x1 = fabsf(input + 0.95f);
+	float x2 = fabsf(input - 0.95f);
 	return 0.5f * (x1 - x2);
 }
 
@@ -81,9 +81,9 @@ inline float clip(float value, float saturation, float saturationinverse)
 	}
 #endif
 
-inline double fast_tanh(double x) 
+inline float fast_tanh(float x)
 {
-	double x2 = x * x;
+	float x2 = x * x;
 	return x * (27.0 + x2) / (27.0 + 9.0 * x2);
 }
 

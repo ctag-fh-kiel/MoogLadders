@@ -8,7 +8,8 @@
 #define OBERHEIM_VARIATION_LADDER_H
 
 #include "LadderFilterBase.h"
-#include "Util.h"
+#include "util.h"
+#include "helpers/ctagFastMath.hpp"
 
 class VAOnePole
 {
@@ -31,31 +32,31 @@ public:
 		z1 = 0.0;
 	}
 	
-	double Tick(double s)
+	float Tick(float s)
 	{
 		s = s * gamma + feedback + epsilon * GetFeedbackOutput();
-		double vn = (a0 * s - z1) * alpha;
-		double out = vn + z1;
+		float vn = (a0 * s - z1) * alpha;
+		float out = vn + z1;
 		z1 = vn + out;
 		return out;
 	}
 	
-	void SetFeedback(double fb) { feedback = fb; }
-	double GetFeedbackOutput(){ return beta * (z1 + feedback * delta); }
-	void SetAlpha(double a) { alpha = a; };
-	void SetBeta(double b) { beta = b; };
+	void SetFeedback(float fb) { feedback = fb; }
+	float GetFeedbackOutput(){ return beta * (z1 + feedback * delta); }
+	void SetAlpha(float a) { alpha = a; };
+	void SetBeta(float b) { beta = b; };
 	
 private:
 
 	float sampleRate;
-	double alpha;
-	double beta;
-	double gamma;
-	double delta;
-	double epsilon;
-	double a0;
-	double feedback;
-	double z1;
+	float alpha;
+	float beta;
+	float gamma;
+	float delta;
+	float epsilon;
+	float a0;
+	float feedback;
+	float z1;
 };
 
 class OberheimVariationMoog : public LadderFilterBase
@@ -91,7 +92,7 @@ public:
 		{
 			float input = samples[s];
 			
-			double sigma =
+			float sigma =
 				LPF1->GetFeedbackOutput() +
 				LPF2->GetFeedbackOutput() +
 				LPF3->GetFeedbackOutput() +
@@ -100,14 +101,14 @@ public:
 			input *= 1.0 + K;
 			
 			// calculate input to first filter
-			double u = (input - K * sigma) * alpha0;
+			float u = (input - K * sigma) * alpha0;
 			
 			u = tanh(saturation * u);
 			
-			double stage1 = LPF1->Tick(u);
-			double stage2 = LPF2->Tick(stage1);
-			double stage3 = LPF3->Tick(stage2);
-			double stage4 = LPF4->Tick(stage3);
+			float stage1 = LPF1->Tick(u);
+			float stage2 = LPF2->Tick(stage1);
+			float stage3 = LPF3->Tick(stage2);
+			float stage4 = LPF4->Tick(stage3);
 			
 			// Oberheim variations
 			samples[s] =
@@ -130,13 +131,13 @@ public:
 		cutoff = c;
 		
 		// prewarp for BZT
-		double wd = 2.0 * MOOG_PI * cutoff;
-		double T = 1.0 / sampleRate;
-		double wa = (2.0 / T) * tan(wd * T / 2.0);
-		double g = wa * T / 2.0;
+		float wd = 2.0 * MOOG_PI * cutoff;
+		float T = 1.0 / sampleRate;
+		float wa = (2.0 / T) * CTAG::SP::HELPERS::fasttan(wd * T / 2.0);
+		float g = wa * T / 2.0;
 		
 		// Feedforward coeff
-		double G = g / (1.0 + g);
+		float G = g / (1.0 + g);
 		
 		LPF1->SetAlpha(G);
 		LPF2->SetAlpha(G);
@@ -166,13 +167,13 @@ private:
 	VAOnePole * LPF3;
 	VAOnePole * LPF4;
 	
-	double K;
-	double gamma;
-	double alpha0;
-	double Q;
-	double saturation;
+	float K;
+	float gamma;
+	float alpha0;
+	float Q;
+	float saturation;
 	
-	double oberheimCoefs[5];
+	float oberheimCoefs[5];
 };
 
 #endif
