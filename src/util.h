@@ -5,7 +5,7 @@
 
 #include <cmath>
 #include <stdint.h>
-
+namespace Moog {
 #define MOOG_E         2.71828182845904523536028747135266250
 #define MOOG_LOG2E     1.44269504088896340735992468100189214
 #define MOOG_LOG10E    0.434294481903251827651128918916605082
@@ -27,64 +27,59 @@
 #define SNAP_TO_ZERO(n)    if (! (n < -1.0e-8 || n > 1.0e-8)) n = 0;
 
 // Linear interpolation, used to crossfade a gain table
-inline float moog_lerp(float amount, float a, float b)
-{
-	return (1.0f - amount) * a + amount * b;
-}
+    inline float moog_lerp(float amount, float a, float b) {
+        return (1.0f - amount) * a + amount * b;
+    }
 
-inline float moog_min(float a, float b)
-{
-	a = b - a;
-	a += fabsf(a);
-	a *= 0.5f;
-	a = b - a;
-	return a;
-}
+    inline float moog_min(float a, float b) {
+        a = b - a;
+        a += fabsf(a);
+        a *= 0.5f;
+        a = b - a;
+        return a;
+    }
 
 // Clamp without branching
 // If input - _limit < 0, then it really substracts, and the 0.5 to make it half the 2 inputs.
 // If > 0 then they just cancel, and keeps input normal.
 // The easiest way to understand it is check what happends on both cases.
-inline float moog_saturate(float input)
-{
-	float x1 = fabsf(input + 0.95f);
-	float x2 = fabsf(input - 0.95f);
-	return 0.5f * (x1 - x2);
-}
+    inline float moog_saturate(float input) {
+        float x1 = fabsf(input + 0.95f);
+        float x2 = fabsf(input - 0.95f);
+        return 0.5f * (x1 - x2);
+    }
 
 // Imitate the (tanh) clipping function of a transistor pair.
 // to 4th order, tanh is x - x*x*x/3; this cubic's
 // plateaus are at +/- 1 so clip to 1 and evaluate the cubic.
 // This is pretty coarse - for instance if you clip a sinusoid this way you
 // can sometimes hear the discontinuity in 4th derivative at the clip point
-inline float clip(float value, float saturation, float saturationinverse)
-{
-	float v2 = (value * saturationinverse > 1 ? 1 :
-				(value * saturationinverse < -1 ? -1:
-				 value * saturationinverse));
-	return (saturation * (v2 - (1./3.) * v2 * v2 * v2));
-}
+    inline float clip(float value, float saturation, float saturationinverse) {
+        float v2 = (value * saturationinverse > 1 ? 1 :
+                    (value * saturationinverse < -1 ? -1 :
+                     value * saturationinverse));
+        return (saturation * (v2 - (1. / 3.) * v2 * v2 * v2));
+    }
 
 #define HZ_TO_RAD(f) (MOOG_PI_2 * f)
 #define RAD_TO_HZ(omega) (MOOG_INV_PI_2 * omega)
 
 #ifdef __GNUC__
-	#define ctz(N) __builtin_ctz(N)
+#define ctz(N) __builtin_ctz(N)
 #else
-	template<typename T>
-	inline int ctz(T x)
-	{
-		int p, b;
-		for (p = 0, b = 1; !(b & x); b <<= 1, ++p)
-			;
-		return p;
-	}
+    template<typename T>
+    inline int ctz(T x)
+    {
+        int p, b;
+        for (p = 0, b = 1; !(b & x); b <<= 1, ++p)
+            ;
+        return p;
+    }
 #endif
 
-inline float fast_tanh(float x)
-{
-	float x2 = x * x;
-	return x * (27.0 + x2) / (27.0 + 9.0 * x2);
+    inline float fast_tanh(float x) {
+        float x2 = x * x;
+        return x * (27.0 + x2) / (27.0 + 9.0 * x2);
+    }
 }
-
 #endif

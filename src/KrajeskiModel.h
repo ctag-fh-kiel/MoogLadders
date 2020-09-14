@@ -25,69 +25,63 @@ You may use it however you might like."
 
 Source: http://song-swap.com/MUMT618/aaron/Presentation/demo.html
 */
+namespace Moog {
+    class KrajeskiMoog final : public LadderFilterBase {
 
-class KrajeskiMoog final : public LadderFilterBase
-{
-	
-public:
-	
-    KrajeskiMoog(float sampleRate) : LadderFilterBase(sampleRate)
-	{
-		memset(state, 0, sizeof(state));
-		memset(delay, 0, sizeof(delay));
-		
-		drive = 1.0;
-		gComp = 1.0;
-		
-		SetCutoff(1000.0f);
-		SetResonance(0.1f);
-	}
-	
-	virtual ~KrajeskiMoog() { }
-	
-	virtual void Process(float * samples, const uint32_t n) override
-	{
-		for (int s = 0; s < n; ++s)
-		{
-			state[0] = CTAG::SP::HELPERS::fasttanh(drive * (samples[s] - 4 * gRes * (state[4] - gComp * samples[s])));
-			
-			for(int i = 0; i < 4; i++)
-			{
-				state[i+1] = g * (0.3 / 1.3 * state[i] + 1 / 1.3 * delay[i] - state[i + 1]) + state[i + 1];
-				delay[i] = state[i];
-			}
-			samples[s] = state[4];
-		}
-	}
-	
-	virtual void SetResonance(float r) override
-	{
-		resonance = r;
-		float wc2 = wc*wc;
-		float wc3 = wc2*wc;
-		gRes = resonance * (1.0029 + 0.0526 * wc - 0.926 * wc2 + 0.0218 * wc3);
-	}
-	
-	virtual void SetCutoff(float c) override
-	{
-		cutoff = c;
-		wc = 2 * MOOG_PI * cutoff / sampleRate;
-        float wc2 = wc*wc;
-        float wc3 = wc2*wc;
-        float wc4 = wc3*wc;
-		g = 0.9892 * wc - 0.4342 * wc2 + 0.1381 * wc3 - 0.0202 * wc4;
-	}
-	
-private:
-	
-	float state[5];
-	float delay[5];
-	float wc; // The angular frequency of the cutoff.
-	float g; // A derived parameter for the cutoff frequency
-	float gRes; // A similar derived parameter for resonance.
-	float gComp; // Compensation factor.
-	float drive; // A parameter that controls intensity of nonlinearities.
-	
-};
+    public:
 
+        KrajeskiMoog(float sampleRate) : LadderFilterBase(sampleRate) {
+            memset(state, 0, sizeof(state));
+            memset(delay, 0, sizeof(delay));
+
+            drive = 1.0;
+            gComp = 1.0;
+
+            SetCutoff(1000.0f);
+            SetResonance(0.1f);
+        }
+
+        virtual ~KrajeskiMoog() {}
+
+        virtual void Process(float *samples, const uint32_t n) override {
+            for (int s = 0; s < n; ++s) {
+                state[0] = CTAG::SP::HELPERS::fasttanh(
+                        drive * (samples[s] - 4 * gRes * (state[4] - gComp * samples[s])));
+
+                for (int i = 0; i < 4; i++) {
+                    state[i + 1] = g * (0.3 / 1.3 * state[i] + 1 / 1.3 * delay[i] - state[i + 1]) + state[i + 1];
+                    delay[i] = state[i];
+                }
+                samples[s] = state[4];
+            }
+        }
+
+        virtual void SetResonance(float r) override {
+            resonance = r;
+            float wc2 = wc * wc;
+            float wc3 = wc2 * wc;
+            gRes = resonance * (1.0029 + 0.0526 * wc - 0.926 * wc2 + 0.0218 * wc3);
+        }
+
+        virtual void SetCutoff(float c) override {
+            cutoff = c;
+            wc = 2 * MOOG_PI * cutoff / sampleRate;
+            float wc2 = wc * wc;
+            float wc3 = wc2 * wc;
+            float wc4 = wc3 * wc;
+            g = 0.9892 * wc - 0.4342 * wc2 + 0.1381 * wc3 - 0.0202 * wc4;
+        }
+
+    private:
+
+        float state[5];
+        float delay[5];
+        float wc; // The angular frequency of the cutoff.
+        float g; // A derived parameter for the cutoff frequency
+        float gRes; // A similar derived parameter for resonance.
+        float gComp; // Compensation factor.
+        float drive; // A parameter that controls intensity of nonlinearities.
+
+    };
+}
 #endif

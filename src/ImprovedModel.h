@@ -36,76 +36,70 @@ Original Implementation: D'Angelo, Valimaki
 
 // Thermal voltage (26 milliwats at room temperature)
 #define VT 0.312
+namespace Moog {
+    class ImprovedMoog : public LadderFilterBase {
+    public:
 
-class ImprovedMoog : public LadderFilterBase
-{
-public:
-	
-	ImprovedMoog(float sampleRate) : LadderFilterBase(sampleRate)
-	{
-		memset(V, 0, sizeof(V));
-		memset(dV, 0, sizeof(dV));
-		memset(tV, 0, sizeof(tV));
-		
-		drive = 1.0f;
-		
-		SetCutoff(1000.0f); // normalized cutoff frequency
-		SetResonance(0.1f); // [0, 4]
-	}
-	
-	virtual ~ImprovedMoog() { }
-	
-	virtual void Process(float * samples, uint32_t n) override
-	{
-		float dV0, dV1, dV2, dV3;
+        ImprovedMoog(float sampleRate) : LadderFilterBase(sampleRate) {
+            memset(V, 0, sizeof(V));
+            memset(dV, 0, sizeof(dV));
+            memset(tV, 0, sizeof(tV));
 
-		for (int i = 0; i < n; i++)
-		{
-			dV0 = -g * (CTAG::SP::HELPERS::fasttanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
-			V[0] += (dV0 + dV[0]) / (2.0 * sampleRate);
-			dV[0] = dV0;
-			tV[0] = CTAG::SP::HELPERS::fasttanh(V[0] / (2.0 * VT));
-			
-			dV1 = g * (tV[0] - tV[1]);
-			V[1] += (dV1 + dV[1]) / (2.0 * sampleRate);
-			dV[1] = dV1;
-			tV[1] = CTAG::SP::HELPERS::fasttanh(V[1] / (2.0 * VT));
-			
-			dV2 = g * (tV[1] - tV[2]);
-			V[2] += (dV2 + dV[2]) / (2.0 * sampleRate);
-			dV[2] = dV2;
-			tV[2] = CTAG::SP::HELPERS::fasttanh(V[2] / (2.0 * VT));
-			
-			dV3 = g * (tV[2] - tV[3]);
-			V[3] += (dV3 + dV[3]) / (2.0 * sampleRate);
-			dV[3] = dV3;
-			tV[3] = CTAG::SP::HELPERS::fasttanh(V[3] / (2.0 * VT));
-			
-			samples[i] = V[3];
-		}
-	}
-	
-	virtual void SetResonance(float r) override
-	{
-		resonance = r;
-	}
-	
-	virtual void SetCutoff(float c) override
-	{
-		cutoff = c;
-		x = (MOOG_PI * cutoff) / sampleRate;
-		g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
-	}
-	
-private:
-	
-	float V[4];
-	float dV[4];
-	float tV[4];
-	
-	float x;
-	float g;
-	float drive;
-};
+            drive = 1.0f;
 
+            SetCutoff(1000.0f); // normalized cutoff frequency
+            SetResonance(0.1f); // [0, 4]
+        }
+
+        virtual ~ImprovedMoog() {}
+
+        virtual void Process(float *samples, uint32_t n) override {
+            float dV0, dV1, dV2, dV3;
+
+            for (int i = 0; i < n; i++) {
+                dV0 = -g * (CTAG::SP::HELPERS::fasttanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
+                V[0] += (dV0 + dV[0]) / (2.0 * sampleRate);
+                dV[0] = dV0;
+                tV[0] = CTAG::SP::HELPERS::fasttanh(V[0] / (2.0 * VT));
+
+                dV1 = g * (tV[0] - tV[1]);
+                V[1] += (dV1 + dV[1]) / (2.0 * sampleRate);
+                dV[1] = dV1;
+                tV[1] = CTAG::SP::HELPERS::fasttanh(V[1] / (2.0 * VT));
+
+                dV2 = g * (tV[1] - tV[2]);
+                V[2] += (dV2 + dV[2]) / (2.0 * sampleRate);
+                dV[2] = dV2;
+                tV[2] = CTAG::SP::HELPERS::fasttanh(V[2] / (2.0 * VT));
+
+                dV3 = g * (tV[2] - tV[3]);
+                V[3] += (dV3 + dV[3]) / (2.0 * sampleRate);
+                dV[3] = dV3;
+                tV[3] = CTAG::SP::HELPERS::fasttanh(V[3] / (2.0 * VT));
+
+                samples[i] = V[3];
+            }
+        }
+
+        virtual void SetResonance(float r) override {
+            resonance = r;
+        }
+
+        virtual void SetCutoff(float c) override {
+            cutoff = c;
+            x = (MOOG_PI * cutoff) / sampleRate;
+            g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
+        }
+
+    private:
+
+        float V[4];
+        float dV[4];
+        float tV[4];
+
+        float x;
+        float g;
+        float drive;
+    };
+}
 #endif

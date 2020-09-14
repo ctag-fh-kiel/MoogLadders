@@ -30,84 +30,80 @@ Original implementation: Victor Lazzarini for CSound5
 Considerations for oversampling: 
 http://music.columbia.edu/pipermail/music-dsp/2005-February/062778.html
 http://www.synthmaker.co.uk/dokuwiki/doku.php?id=tutorials:oversampling
-*/ 
+*/
 
-class HuovilainenMoog : public LadderFilterBase
-{
-public:
-	
-	HuovilainenMoog(float sampleRate) : LadderFilterBase(sampleRate), thermal(0.000025)
-	{
-		memset(stage, 0, sizeof(stage));
-		memset(delay, 0, sizeof(delay));
-		memset(stageTanh, 0, sizeof(stageTanh));
-		SetCutoff(1000.0f);
-		SetResonance(0.10f);
-	}
-	
-	virtual ~HuovilainenMoog()
-	{
-		
-	}
-	
-	virtual void Process(float * samples, uint32_t n) override
-	{
-		for (int s = 0; s < n; ++s)
-		{
-			// Oversample
-			for (int j = 0; j < 2; j++) 
-			{
-				float input = samples[s] - resQuad * delay[5];
-				delay[0] = stage[0] = delay[0] + tune * (CTAG::SP::HELPERS::fasttanh(input * thermal) - stageTanh[0]);
-				for (int k = 1; k < 4; k++) 
-				{
-					input = stage[k-1];
-					stage[k] = delay[k] + tune * ((stageTanh[k-1] = CTAG::SP::HELPERS::fasttanh(input * thermal)) - (k != 3 ? stageTanh[k] : CTAG::SP::HELPERS::fasttanh(delay[k] * thermal)));
-					delay[k] = stage[k];
-				}
-				// 0.5 sample delay for phase compensation
-				delay[5] = (stage[3] + delay[4]) * 0.5;
-				delay[4] = stage[3];
-			}
-			samples[s] = delay[5];
-		}
+namespace Moog {
+    class HuovilainenMoog : public LadderFilterBase {
+    public:
 
-	}
-	
-	virtual void SetResonance(float r) override
-	{
-		resonance = r;
-		resQuad = 4.0 * resonance * acr;
-	}
-	
-	virtual void SetCutoff(float c) override
-	{
-		cutoff = c;
+        HuovilainenMoog(float sampleRate) : LadderFilterBase(sampleRate), thermal(0.000025) {
+            memset(stage, 0, sizeof(stage));
+            memset(delay, 0, sizeof(delay));
+            memset(stageTanh, 0, sizeof(stageTanh));
+            SetCutoff(1000.0f);
+            SetResonance(0.10f);
+        }
 
-		float fc =  cutoff / sampleRate;
-		float f  =  fc * 0.5; // oversampled
-		float fc2 = fc * fc;
-		float fc3 = fc * fc * fc;
+        virtual ~HuovilainenMoog() {
 
-		float fcr = 1.8730 * fc3 + 0.4955 * fc2 - 0.6490 * fc + 0.9988;
-		acr = -3.9364 * fc2 + 1.8409 * fc + 0.9968;
+        }
 
-		tune = (1.0 - CTAG::SP::HELPERS::fastexp(-((2 * MOOG_PI) * f * fcr))) / thermal;
+        virtual void Process(float *samples, uint32_t n) override {
+            for (int s = 0; s < n; ++s) {
+                // Oversample
+                for (int j = 0; j < 2; j++) {
+                    float input = samples[s] - resQuad * delay[5];
+                    delay[0] = stage[0] =
+                            delay[0] + tune * (CTAG::SP::HELPERS::fasttanh(input * thermal) - stageTanh[0]);
+                    for (int k = 1; k < 4; k++) {
+                        input = stage[k - 1];
+                        stage[k] = delay[k] + tune *
+                                              ((stageTanh[k - 1] = CTAG::SP::HELPERS::fasttanh(input * thermal)) -
+                                               (k != 3 ? stageTanh[k] : CTAG::SP::HELPERS::fasttanh(
+                                                       delay[k] * thermal)));
+                        delay[k] = stage[k];
+                    }
+                    // 0.5 sample delay for phase compensation
+                    delay[5] = (stage[3] + delay[4]) * 0.5;
+                    delay[4] = stage[3];
+                }
+                samples[s] = delay[5];
+            }
 
-		SetResonance(resonance);
-	}
-	
-private:
-	
-	float stage[4];
-	float stageTanh[3];
-	float delay[6];
+        }
 
-	float thermal;
-	float tune;
-	float acr;
-	float resQuad;
-	
-}; 
+        virtual void SetResonance(float r) override {
+            resonance = r;
+            resQuad = 4.0 * resonance * acr;
+        }
 
+        virtual void SetCutoff(float c) override {
+            cutoff = c;
+
+            float fc = cutoff / sampleRate;
+            float f = fc * 0.5; // oversampled
+            float fc2 = fc * fc;
+            float fc3 = fc * fc * fc;
+
+            float fcr = 1.8730 * fc3 + 0.4955 * fc2 - 0.6490 * fc + 0.9988;
+            acr = -3.9364 * fc2 + 1.8409 * fc + 0.9968;
+
+            tune = (1.0 - CTAG::SP::HELPERS::fastexp(-((2 * MOOG_PI) * f * fcr))) / thermal;
+
+            SetResonance(resonance);
+        }
+
+    private:
+
+        float stage[4];
+        float stageTanh[3];
+        float delay[6];
+
+        float thermal;
+        float tune;
+        float acr;
+        float resQuad;
+
+    };
+}
 #endif

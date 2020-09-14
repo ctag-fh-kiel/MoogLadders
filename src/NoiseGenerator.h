@@ -11,7 +11,7 @@
 
 #include "util.h"
 #include "Filters.h"
-
+namespace Moog {
 struct WhiteNoiseSource
 {
 	WhiteNoiseSource() : dist(-1, 1) {}
@@ -40,43 +40,40 @@ struct BrownNoise : public WhiteNoiseSource
 };
 
 // Note! This noise is only valid for 44100 because of the hard-coded filter coefficients
-struct NoiseGenerator
-{
-	enum NoiseType
-	{
-		WHITE,
-		PINK,
-		BROWN,
-	};
-	
-	std::vector<float> produce(NoiseType t, int sampleRate, int channels, float seconds)
-	{
-		int samplesToGenerate = sampleRate * seconds * channels;
-		std::vector<float> samples;
-		samples.resize(samplesToGenerate);
-		
-		switch (t)
-		{
-		case NoiseType::WHITE:
-		{
-			WhiteNoise n;
-			for(int s = 0; s < samplesToGenerate; s++) samples[s] = n();
-		} break;
-		case NoiseType::PINK:
-		{
-			PinkNoise n;
-			for(int s = 0; s < samplesToGenerate; s++) samples[s] = n();
-		} break;
-		case NoiseType::BROWN:
-		{
-			BrownNoise n;
-			for(int s = 0; s < samplesToGenerate; s++) samples[s] = n();
-		} break;
-		default: throw std::runtime_error("Invalid noise type");
-		}
-		return samples;
-	}
-	
+struct NoiseGenerator {
+    enum NoiseType {
+        WHITE,
+        PINK,
+        BROWN,
+    };
+
+    std::vector<float> produce(NoiseType t, int sampleRate, int channels, float seconds) {
+        int samplesToGenerate = sampleRate * seconds * channels;
+        std::vector<float> samples;
+        samples.resize(samplesToGenerate);
+
+        switch (t) {
+            case NoiseType::WHITE: {
+                WhiteNoise n;
+                for (int s = 0; s < samplesToGenerate; s++) samples[s] = n();
+            }
+                break;
+            case NoiseType::PINK: {
+                PinkNoise n;
+                for (int s = 0; s < samplesToGenerate; s++) samples[s] = n();
+            }
+                break;
+            case NoiseType::BROWN: {
+                BrownNoise n;
+                for (int s = 0; s < samplesToGenerate; s++) samples[s] = n();
+            }
+                break;
+            default:
+                throw std::runtime_error("Invalid noise type");
+        }
+        return samples;
+    }
+}
 };
 
 #endif
