@@ -79,9 +79,9 @@ Original implementation: Tim Stilson, David Lowenfels
 
                 for (int pole = 0; pole < 4; ++pole) {
                     localState = state[pole];
-                    output = moog_saturate(output + p * (output - localState));
+                    output = clip(output + p * (output - localState), 3.f, 1.f/3.f);
                     state[pole] = output;
-                    output = moog_saturate(output + localState);
+                    output = clip(output + localState, 3.f, 1.f/3.f);
                 }
 
                 SNAP_TO_ZERO(output);

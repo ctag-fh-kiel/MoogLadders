@@ -24,7 +24,7 @@ namespace Moog {
 #define NO_COPY(C) C(const C &) = delete; C & operator = (const C &) = delete
 #define NO_MOVE(C) NO_COPY(C); C(C &&) = delete; C & operator = (const C &&) = delete
 
-#define SNAP_TO_ZERO(n)    if (! (n < -1.0e-8 || n > 1.0e-8)) n = 0;
+#define SNAP_TO_ZERO(n)    if (! (n < -1.0e-8 || n > 1.0e-8)) n = 0.f;
 
 // Linear interpolation, used to crossfade a gain table
     inline float moog_lerp(float amount, float a, float b) {
