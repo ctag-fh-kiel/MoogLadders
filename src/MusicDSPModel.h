@@ -39,7 +39,7 @@ namespace Moog {
                 stage[3] = stage[2] * p + delay[3] * p - k * stage[3];
 
                 // Clipping band-limited sigmoid
-                stage[3] -= (stage[3] * stage[3] * stage[3]) / 6.0;
+                stage[3] -= (stage[3] * stage[3] * stage[3]) / 6.0f;
 
                 delay[0] = x;
                 delay[1] = stage[0];
@@ -51,16 +51,16 @@ namespace Moog {
         }
 
         virtual void SetResonance(float r) override {
-            resonance = r * (t2 + 6.0 * t1) / (t2 - 6.0 * t1);
+            resonance = r * (t2 + 6.0f * t1) / (t2 - 6.0f * t1);
         }
 
         virtual void SetCutoff(float c) override {
-            cutoff = 2.0 * c / sampleRate;
+            cutoff = 2.0f * c / sampleRate;
 
             p = cutoff * (1.8 - 0.8 * cutoff);
-            k = 2.0 * CTAG::SP::HELPERS::fastsin(cutoff * MOOG_PI * 0.5) - 1.0;
-            t1 = (1.0 - p) * 1.386249;
-            t2 = 12.0 + t1 * t1;
+            k = 2.0f * CTAG::SP::HELPERS::fastsin(cutoff * MOOG_PI * 0.5f) - 1.0f;
+            t1 = (1.0f - p) * 1.386249f;
+            t2 = 12.0f + t1 * t1;
 
             SetResonance(resonance);
         }

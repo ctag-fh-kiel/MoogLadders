@@ -6,25 +6,25 @@
 #include <cmath>
 #include <stdint.h>
 namespace Moog {
-#define MOOG_E         2.71828182845904523536028747135266250
-#define MOOG_LOG2E     1.44269504088896340735992468100189214
-#define MOOG_LOG10E    0.434294481903251827651128918916605082
-#define MOOG_LN2       0.693147180559945309417232121458176568
-#define MOOG_LN10      2.30258509299404568401799145468436421
-#define MOOG_PI        3.14159265358979323846264338327950288
-#define MOOG_PI_2      1.57079632679489661923132169163975144
-#define MOOG_PI_4      0.785398163397448309615660845819875721
-#define MOOG_1_PI      0.318309886183790671537767526745028724
-#define MOOG_2_PI      0.636619772367581343075535053490057448
-#define MOOG_2_SQRTPI  1.12837916709551257389615890312154517
-#define MOOG_SQRT2     1.41421356237309504880168872420969808
-#define MOOG_SQRT1_2   0.707106781186547524400844362104849039
-#define MOOG_INV_PI_2  0.159154943091895
+#define MOOG_E         2.71828182845904523536028747135266250f
+#define MOOG_LOG2E     1.44269504088896340735992468100189214f
+#define MOOG_LOG10E    0.434294481903251827651128918916605082f
+#define MOOG_LN2       0.693147180559945309417232121458176568f
+#define MOOG_LN10      2.30258509299404568401799145468436421f
+#define MOOG_PI        3.14159265358979323846264338327950288f
+#define MOOG_PI_2      1.57079632679489661923132169163975144f
+#define MOOG_PI_4      0.785398163397448309615660845819875721f
+#define MOOG_1_PI      0.318309886183790671537767526745028724f
+#define MOOG_2_PI      0.636619772367581343075535053490057448f
+#define MOOG_2_SQRTPI  1.12837916709551257389615890312154517f
+#define MOOG_SQRT2     1.41421356237309504880168872420969808f
+#define MOOG_SQRT1_2   0.707106781186547524400844362104849039f
+#define MOOG_INV_PI_2  0.159154943091895f
 
 #define NO_COPY(C) C(const C &) = delete; C & operator = (const C &) = delete
 #define NO_MOVE(C) NO_COPY(C); C(C &&) = delete; C & operator = (const C &&) = delete
 
-#define SNAP_TO_ZERO(n)    if (! (n < -1.0e-8 || n > 1.0e-8)) n = 0.f;
+#define SNAP_TO_ZERO(n)    if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0.f;
 
 // Linear interpolation, used to crossfade a gain table
     inline float moog_lerp(float amount, float a, float b) {
@@ -58,7 +58,7 @@ namespace Moog {
         float v2 = (value * saturationinverse > 1 ? 1 :
                     (value * saturationinverse < -1 ? -1 :
                      value * saturationinverse));
-        return (saturation * (v2 - (1. / 3.) * v2 * v2 * v2));
+        return (saturation * (v2 - (1.f / 3.f) * v2 * v2 * v2));
     }
 
 #define HZ_TO_RAD(f) (MOOG_PI_2 * f)
@@ -79,7 +79,7 @@ namespace Moog {
 
     inline float fast_tanh(float x) {
         float x2 = x * x;
-        return x * (27.0 + x2) / (27.0 + 9.0 * x2);
+        return x * (27.0f + x2) / (27.0f + 9.0f * x2);
     }
 }
 #endif

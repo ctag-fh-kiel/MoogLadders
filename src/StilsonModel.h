@@ -30,7 +30,7 @@ References: Stilson and Smith (1996), DAFX - Zolzer (ed) (2nd ed)
 Original implementation: Tim Stilson, David Lowenfels
 */
 
-    static float S_STILSON_GAINTABLE[199] =
+    static const float S_STILSON_GAINTABLE[199] =
             {
                     0.999969, 0.990082, 0.980347, 0.970764, 0.961304, 0.951996, 0.94281, 0.933777, 0.924866, 0.916077,
                     0.90741, 0.898865, 0.890442, 0.882141, 0.873962, 0.865906, 0.857941, 0.850067, 0.842346, 0.834686,
@@ -75,7 +75,7 @@ Original implementation: Tim Stilson, David Lowenfels
                 const float input = samples[s] * 0.65f;
 
                 // Negative Feedback
-                output = 0.25 * (input - output);
+                output = 0.25f * (input - output);
 
                 for (int pole = 0; pole < 4; ++pole) {
                     localState = state[pole];
@@ -98,8 +98,8 @@ Original implementation: Tim Stilson, David Lowenfels
             float ixfrac;
             int ixint;
 
-            ix = p * 99;
-            ixint = floor(ix);
+            ix = p * 99.f;
+            ixint = floorf(ix);
             ixfrac = ix - ixint;
 
             Q = r * moog_lerp(ixfrac, S_STILSON_GAINTABLE[ixint + 99], S_STILSON_GAINTABLE[ixint + 100]);
@@ -114,7 +114,7 @@ Original implementation: Tim Stilson, David Lowenfels
             float x3 = fc * fc * fc;
 
             // Frequency & amplitude correction (Cubic Fit)
-            p = -0.69346 * x3 - 0.59515 * x2 + 3.2937 * fc - 1.0072;
+            p = -0.69346f * x3 - 0.59515f * x2 + 3.2937f * fc - 1.0072f;
 
             SetResonance(resonance);
         }
