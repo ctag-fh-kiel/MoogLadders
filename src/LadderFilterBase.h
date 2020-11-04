@@ -4,6 +4,7 @@
 #define LADDER_FILTER_BASE_H
 
 #include "util.h"
+
 namespace Moog {
     class LadderFilterBase {
     public:

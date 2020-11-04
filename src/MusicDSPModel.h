@@ -12,6 +12,7 @@
 #include "util.h"
 #include "cstring"
 #include "helpers/ctagFastMath.hpp"
+
 namespace Moog {
     class MusicDSPMoog : public LadderFilterBase {
 

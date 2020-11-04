@@ -14,6 +14,7 @@
 #include "LadderFilterBase.h"
 #include <cstring>
 #include "helpers/ctagFastMath.hpp"
+
 namespace Moog {
 /*
 The simplified nonlinear Moog filter is based on the full Huovilainen model,

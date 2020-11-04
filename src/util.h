@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <stdint.h>
+
 namespace Moog {
 #define MOOG_E         2.71828182845904523536028747135266250f
 #define MOOG_LOG2E     1.44269504088896340735992468100189214f

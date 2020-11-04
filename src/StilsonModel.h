@@ -12,6 +12,7 @@
 
 #include "LadderFilterBase.h"
 #include <cstring>
+
 namespace Moog {
 /*
 A digital model of the classic Moog filter was presented first by Stilson and
@@ -79,9 +80,9 @@ Original implementation: Tim Stilson, David Lowenfels
 
                 for (int pole = 0; pole < 4; ++pole) {
                     localState = state[pole];
-                    output = clip(output + p * (output - localState), 3.f, 1.f/3.f);
+                    output = clip(output + p * (output - localState), 3.f, 1.f / 3.f);
                     state[pole] = output;
-                    output = clip(output + localState, 3.f, 1.f/3.f);
+                    output = clip(output + localState, 3.f, 1.f / 3.f);
                 }
 
                 SNAP_TO_ZERO(output);

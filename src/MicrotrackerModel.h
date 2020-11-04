@@ -9,6 +9,7 @@
 #include "LadderFilterBase.h"
 #include "util.h"
 #include "helpers/ctagFastMath.hpp"
+
 namespace Moog {
     class MicrotrackerMoog : public LadderFilterBase {
 
